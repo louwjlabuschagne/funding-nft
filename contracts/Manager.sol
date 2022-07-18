@@ -10,7 +10,6 @@ contract Manager is AccessControl {
     bool public init;
     bytes32 internal constant ERC20_MINTER_ROLE =
         keccak256("ERC20_MINTER_ROLE");
-    bytes32 internal constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 internal constant ERC721_MINTER_ROLE =
         keccak256("ERC721_MINTER_ROLE");
     bytes32 internal constant ERC721_CREATOR_ROLE =
@@ -38,7 +37,6 @@ contract Manager is AccessControl {
     {
         NFT nft = new NFT(name_, symbol_);
         address nftAddress = address(nft);
-        // nft.grantRole(MINTER_ROLE, address(this));
         erc721s.push(nftAddress);
         return nftAddress;
     }
