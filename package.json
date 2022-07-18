@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.0",
+    "@openzeppelin/test-helpers": "^0.5.15",
     "prettier-plugin-solidity": "^1.0.0-dev.23"
   }
 }

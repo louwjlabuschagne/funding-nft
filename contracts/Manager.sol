@@ -7,9 +7,10 @@ import "./NFT.sol";
 import "./Token.sol";
 
 contract Manager is AccessControl {
-    bool init;
+    bool public init;
     bytes32 internal constant ERC20_MINTER_ROLE =
         keccak256("ERC20_MINTER_ROLE");
+    bytes32 internal constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 internal constant ERC721_MINTER_ROLE =
         keccak256("ERC721_MINTER_ROLE");
     bytes32 internal constant ERC721_CREATOR_ROLE =
@@ -30,22 +31,39 @@ contract Manager is AccessControl {
         erc20 = _erc20;
     }
 
-    function createNFT(string memory name_, string memory symbol_) onlyRole(ERC721_CREATOR_ROLE) public returns (address) {
+    function createNFT(string memory name_, string memory symbol_)
+        public
+        onlyRole(ERC721_CREATOR_ROLE)
+        returns (address)
+    {
         NFT nft = new NFT(name_, symbol_);
-        erc721s.push(address(nft));
-        return address(nft);
+        address nftAddress = address(nft);
+        // nft.grantRole(MINTER_ROLE, address(this));
+        erc721s.push(nftAddress);
+        return nftAddress;
     }
 
-    function mintERC20(address to, uint256 amount) onlyRole(ERC20_MINTER_ROLE) public {
+    function mintERC20(address to, uint256 amount)
+        public
+        onlyRole(ERC20_MINTER_ROLE)
+    {
         Token(erc20).mint(to, amount);
     }
 
     function mintERC721(address erc721, address to)
-        onlyRole(ERC721_MINTER_ROLE)
         public
+        onlyRole(ERC721_MINTER_ROLE)
     {
         NFT(erc721).mint(to);
     }
 
-    
+    function forward(address toAddr, bytes memory data)
+        public
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (bytes memory)
+    {
+        (bool success, bytes memory returnData) = toAddr.call{value: 0}(data);
+        require(success, "Failed to call contract");
+        return returnData;
+    }
 }
